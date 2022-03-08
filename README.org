@@ -121,13 +121,12 @@ void setup()
 ** Serial Addresses
 
 More than one TMC2209 may be connected to a single serial port, if each TMC2209
-is assigned a unique serial address. The default serial address is
-"SERIAL_ADDRESS_0". The serial address may be changed from "SERIAL_ADDRESS_0"
-using the TMC2209 hardware input pins MS1 and MS2, to "SERIAL_ADDRESS_1",
-"SERIAL_ADDRESS_2", or "SERIAL_ADDRESS_3".
+is assigned a unique serial address. The default serial address is 0.
+The serial address may be changed from 0 using the TMC2209 hardware input
+pins MS1 and MS2, to 1, 2, or 3.
 
 The TMC2209 serial address must be specified during the TMC2209 setup, if it is
-not equal to the default of "SERIAL_ADDRESS_0".
+not equal to the default of 0.
 
 For example:
 
@@ -138,16 +137,14 @@ For example:
 
 // Instantiate the two TMC2209
 TMC2209 stepper_driver_0;
-const TMC2209::SerialAddress SERIAL_ADDRESS_0 = TMC2209::SERIAL_ADDRESS_0;
 TMC2209 stepper_driver_1;
-const TMC2209::SerialAddress SERIAL_ADDRESS_1 = TMC2209::SERIAL_ADDRESS_1;
 const long SERIALX_BAUD_RATE = 115200;
 
 void setup()
 {
-  // TMC2209::SERIAL_ADDRESS_0 is used by default if not specified
-  stepper_driver_0.setup(Serial1,SERIALX_BAUD_RATE,SERIAL_ADDRESS_0);
-  stepper_driver_1.setup(Serial1,SERIALX_BAUD_RATE,SERIAL_ADDRESS_1);
+  // TMC2209::0 is used by default if not specified
+  stepper_driver_0.setup(Serial1,SERIALX_BAUD_RATE,0);
+  stepper_driver_1.setup(Serial1,SERIALX_BAUD_RATE,1);
 }
 
 #+END_SRC

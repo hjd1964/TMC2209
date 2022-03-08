@@ -2,6 +2,7 @@
 #include <TMC2209.h>
 
 HardwareSerial & serial_stream = Serial1;
+//SoftwareSerial serial_stream(18, 17); // RX, TX
 
 const long SERIAL_BAUD_RATE = 115200;
 const long SERIAL1_BAUD_RATE_COUNT = 10;

@@ -9,26 +9,28 @@
 #define TMC2209_H
 #include <Arduino.h>
 
+#ifdef USE_SOFTWARE_SERIAL
+  #include <SoftwareSerial.h>
+#endif
 
 class TMC2209
 {
 public:
   TMC2209();
 
-  enum SerialAddress
-  {
-    SERIAL_ADDRESS_0=0,
-    SERIAL_ADDRESS_1=1,
-    SERIAL_ADDRESS_2=2,
-    SERIAL_ADDRESS_3=3,
-  };
   // identify which microcontroller serial port is connected to the TMC2209
   // e.g. Serial1, Serial2...
   // optionally identify which serial address is assigned to the TMC2209 if not
-  // the default of SERIAL_ADDRESS_0
+  // the default of 0
   void setup(HardwareSerial & serial,
     long serial_baud_rate=115200,
-    SerialAddress serial_address=SERIAL_ADDRESS_0);
+    int serial_address=0, bool tx_only = false);
+
+  void setup(SoftwareSerial & serial,
+    long serial_baud_rate=115200,
+    int serial_address=0, bool tx_only = false);
+
+  inline void listen() { if (soft_serial_ptr_ != nullptr) soft_serial_ptr_->listen(); }
 
   // check to make sure TMC2209 is properly setup and communicating
   bool isSetupAndCommunicating();
@@ -187,7 +189,11 @@ public:
 
 private:
   bool blocking_;
+  unsigned long lastCommandMillis = 0;
+  unsigned long nextCommandReadyMicros = 0;
+
   HardwareSerial * serial_ptr_;
+  SoftwareSerial * soft_serial_ptr_;
   uint32_t serial_baud_rate_;
   uint8_t serial_address_;
 
@@ -198,7 +204,7 @@ private:
   const static uint32_t ECHO_DELAY_INC_MICROSECONDS = 1;
   const static uint32_t ECHO_DELAY_MAX_MICROSECONDS = 4000;
   const static uint32_t REPLY_DELAY_INC_MICROSECONDS = 1;
-  const static uint32_t REPLY_DELAY_MAX_MICROSECONDS = 10000;
+  const static uint32_t REPLY_DELAY_MAX_MICROSECONDS = 60000;
   const static uint32_t POST_READ_DELAY_INC_MICROSECONDS = 10;
   const static uint32_t POST_READ_DELAY_NUMERATOR = 500000;
 
@@ -497,9 +503,21 @@ private:
   };
   const static uint8_t ADDRESS_PWM_AUTO = 0x72;
 
+  bool tx_only_ = false;
+  bool no_echo = false;
+
+  void setup(int serial_address);
+
   void setOperationModeToSerial(HardwareSerial & serial,
     long serial_baud_rate,
-    SerialAddress serial_address=SERIAL_ADDRESS_0);
+    int serial_address=0);
+
+  void setOperationModeToSerial(SoftwareSerial & serial,
+    long serial_baud_rate,
+    int serial_address=0);
+
+  void setOperationModeToSerial(long serial_baud_rate,
+    int serial_address=0);
 
   void setRegistersToDefaults();
   void readAndStoreRegisters();
@@ -521,6 +539,10 @@ private:
     uint32_t data);
   uint32_t read(uint8_t register_address);
 
+  int serial_available();
+  int serial_read();
+  void serial_write(char c);
+
   uint8_t percentToCurrentSetting(uint8_t percent);
   uint8_t currentSettingToPercent(uint8_t current_setting);
   uint8_t percentToHoldDelaySetting(uint8_t percent);
@@ -536,6 +558,7 @@ private:
   uint32_t readChopperConfigBytes();
   void writeStoredPwmConfig();
   uint32_t readPwmConfigBytes();
+  
 };
 
 #endif

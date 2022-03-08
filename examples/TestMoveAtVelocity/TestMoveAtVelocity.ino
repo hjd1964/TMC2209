@@ -2,10 +2,11 @@
 #include <TMC2209.h>
 
 HardwareSerial & serial_stream = Serial1;
+//SoftwareSerial serial_stream(18, 17); // RX, TX
 
 const long SERIAL_BAUD_RATE = 115200;
 const int DELAY = 2000;
-const int32_t VELOCITY = 20000;
+const int32_t VELOCITY = 2000;
 const uint8_t RUN_CURRENT_PERCENT = 40;
 
 
@@ -17,8 +18,10 @@ void setup()
 {
   Serial.begin(SERIAL_BAUD_RATE);
 
-  stepper_driver.setup(serial_stream);
+  stepper_driver.setup(serial_stream,115200,0,true);
 
+  stepper_driver.setMicrostepsPerStep(32);
+  
   if (stepper_driver.isSetupAndCommunicating())
   {
     Serial.println("Stepper driver setup and communicating!");
@@ -51,7 +54,7 @@ void loop()
   {
     Serial.println("Stepper driver is disabled by input pin!");
   }
-  else if (not settings.enabled)
+  else if (not settings.enabled && false)
   {
     Serial.println("Stepper driver is disabled by firmware!");
   }
