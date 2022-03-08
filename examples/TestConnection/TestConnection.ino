@@ -1,4 +1,6 @@
 #include <Arduino.h>
+
+//#define TMC2209_SOFTWARE_SERIAL
 #include <TMC2209.h>
 
 HardwareSerial & serial_stream = Serial2;
@@ -10,12 +12,9 @@ const int DELAY = 2000;
 // Instantiate TMC2209
 TMC2209 stepper_driver;
 
-
-void setup()
-{
-  
+void setup() {
   serial_stream.begin(115200, SERIAL_8N1, 4, 23);
-//  serial_stream.begin(115200);
+ // serial_stream.begin(115200);
   Serial.begin(SERIAL_BAUD_RATE);
   delay(2000);
   stepper_driver.setup(serial_stream, 115200, 2, false);
