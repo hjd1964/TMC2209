@@ -53,7 +53,7 @@ public:
     serial_ptr_ = &serial;
     serial_baud_rate_ = serial_baud_rate;
 
-    setOperationModeToSerial(serial, serial_baud_rate, serial_address);
+    setOperationModeToSerial(serial_baud_rate, serial_address);
     setRegistersToDefaults();
     readAndStoreRegisters();
     minimizeMotorCurrent();
