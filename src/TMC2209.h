@@ -766,7 +766,7 @@ private:
   bool tx_only_ = false;
   bool no_echo = false;
 
-  void setOperationModeToSerial(HSSerial & serial, long serial_baud_rate, int serial_address = 0) {
+  void setOperationModeToSerial(long serial_baud_rate, int serial_address = 0) {
     serial_address_ = serial_address;
 
     global_config_.bytes = 0;
