@@ -2,7 +2,6 @@
 #include <TMC2209.h>
 
 HardwareSerial & serial_stream = Serial1;
-//SoftwareSerial serial_stream(18, 17); // RX, TX
 
 const long SERIAL_BAUD_RATE = 115200;
 const long SERIAL1_BAUD_RATE_COUNT = 10;
@@ -35,7 +34,7 @@ void setup()
 void loop()
 {
   long serial1_baud_rate = SERIAL1_BAUD_RATES[serial1_baud_rate_index++];
-  stepper_driver.setup(serial_stream,serial1_baud_rate);
+  stepper_driver.setup(serial_stream, serial1_baud_rate);
   if (serial1_baud_rate_index == SERIAL1_BAUD_RATE_COUNT)
   {
     serial1_baud_rate_index = 0;

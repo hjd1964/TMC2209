@@ -1,30 +1,35 @@
 #include <Arduino.h>
 
+// use SoftwareSerial library to communicate with TMC2209
 //#define TMC2209_SOFTWARE_SERIAL
+
+// use HardwareSerial library to communicate with TMC2209
+HardwareSerial & serial_stream = Serial1;
+
 #include <TMC2209.h>
-
-HardwareSerial & serial_stream = Serial2;
-//SoftwareSerial serial_stream(4, 23); // RX, TX
-
-const long SERIAL_BAUD_RATE = 115200;
-const int DELAY = 2000;
 
 // Instantiate TMC2209
 TMC2209 stepper_driver;
 
+const long SERIAL_BAUD_RATE = 115200;
+const int DELAY = 2000;
+
 void setup() {
-  serial_stream.begin(115200, SERIAL_8N1, 4, 23);
- // serial_stream.begin(115200);
   Serial.begin(SERIAL_BAUD_RATE);
-  delay(2000);
-  stepper_driver.setup(serial_stream, 115200, 2, false);
+  delay(DELAY);
+
+  // use SoftwareSerial library to communicate with TMC2209 (rx -1 for read disable)
+  //stepper_driver.setup(115200, 0, -1, 23); // baud, device address, rx, tx
+
+  // use HardwareSerial library to communicate with TMC2209 (only ESP32 allows specifying the pins)
+  stepper_driver.setup(serial_stream, 115200, 2, 4, 23); // hardware serial, baud, device address, rx, tx
 }
 
 void loop()
 {
   Serial.println("*************************");
 
-  TMC2209::Settings settings = stepper_driver.getSettings();  settings = stepper_driver.getSettings();
+  TMC2209::Settings settings = stepper_driver.getSettings();
   Serial.print("settings.is_communicating = ");
   Serial.println(settings.is_communicating);
 

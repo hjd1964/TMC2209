@@ -12,15 +12,11 @@
 // enable or disable debug messages
 #define TMC2209_DEBUG false
 
-#if !defined(TMC2209_ESP32_HARDWARE_SERIAL) && !defined(TMC2209_HARDWARE_SERIAL) && !defined(TMC2209_SOFTWARE_SERIAL)
+#if !defined(TMC2209_HARDWARE_SERIAL) && !defined(TMC2209_SOFTWARE_SERIAL)
   #define TMC2209_HARDWARE_SERIAL
 #endif
 
-#if defined(TMC2209_ESP32_HARDWARE_SERIAL)
-  #define TMC2209_HARDWARE_SERIAL
-  //#include <HardwareSerial.h>
-  #define HSSerial HardwareSerial
-#elif defined(TMC2209_HARDWARE_SERIAL)
+#if defined(TMC2209_HARDWARE_SERIAL)
   //#include <HardwareSerial.h>
   #define HSSerial HardwareSerial
 #elif defined(TMC2209_SOFTWARE_SERIAL)
@@ -34,24 +30,39 @@ public:
     blocking_ = true;
     serial_ptr_ = nullptr;
     serial_baud_rate_ = 500000;
+    rx_ = -1;
+    tx_ = -1;
     serial_address_ = 0;
     cool_step_enabled_ = false;
   }
 
   // identify which microcontroller serial port is connected to the TMC2209
-  // e.g. Serial1, Serial2...
-  // optionally identify which serial address is assigned to the TMC2209 if not
-  // the default of 0
-  void setup(HSSerial & serial, long serial_baud_rate = 115200, int serial_address = 0, bool tx_only = false) {
+  // specify rx and tx for SoftwareSerial (rx = -1 for write only)
+  void setup(long serial_baud_rate, int serial_address = 0, int rx = -1, int tx = -1) {
     #ifdef TMC2209_HARDWARE_SERIAL
       no_echo = false;
     #else // TMC2209_SOFTWARE_SERIAL
+      if (serial_ptr_ == nullptr) serial_ptr_ = new SoftwareSerial(rx, tx);
       no_echo = true;
     #endif
     blocking_ = false;
-    tx_only_ = tx_only;
-    serial_ptr_ = &serial;
+    tx_only_ = (rx == -1);
     serial_baud_rate_ = serial_baud_rate;
+    rx_ = rx;
+    tx_ = tx;
+
+    #if defined(TMC2209_HARDWARE_SERIAL) && defined(ESP32)
+    Serial.println("Starting serial port");
+      if (rx_ >= 0 && tx_ >= 0) serial_ptr_->begin(serial_baud_rate_, SERIAL_8N1, rx_, tx_); else serial_ptr_->begin(serial_baud_rate_);
+    #else
+      serial_ptr_->begin(serial_baud_rate_);
+      #ifdef TMC2209_SOFTWARE_SERIAL
+        if (tx_ >= 0) {
+          pinMode(tx_, OUTPUT);
+          digitalWrite(tx_, HIGH);
+        }
+      #endif
+    #endif
 
     setOperationModeToSerial(serial_baud_rate, serial_address);
     setRegistersToDefaults();
@@ -61,6 +72,12 @@ public:
     disableAutomaticCurrentScaling();
     disableAutomaticGradientAdaptation();
     if (!isSetupAndCommunicating()) blocking_ = true;
+  }
+
+  // identify which microcontroller serial port is connected to the TMC2209
+  void setup(HSSerial & serial, long serial_baud_rate = 500000, int serial_address = 0, int rx = -1, int tx = -1) {
+    serial_ptr_ = &serial;
+    setup(serial_baud_rate, serial_address, rx, tx);
   }
 
   // if driver is not communicating, check power and communication connections
@@ -475,6 +492,8 @@ private:
   unsigned long nextCommandReadyMicros = 0;
 
   uint32_t serial_baud_rate_;
+  int rx_;
+  int tx_;
   uint8_t serial_address_;
 
   // Serial Settings
