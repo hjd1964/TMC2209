@@ -552,10 +552,8 @@ private:
   GlobalConfig global_config_;
 
   const static uint8_t ADDRESS_GSTAT = 0x01;
-  union GlobalStatus
-  {
-    struct
-    {
+  union GlobalStatus {
+    struct {
       uint32_t reset : 1;
       uint32_t drv_err : 1;
       uint32_t uv_cp : 1;
@@ -567,10 +565,8 @@ private:
   const static uint8_t ADDRESS_IFCNT = 0x02;
 
   const static uint8_t ADDRESS_SENDDELAY = 0x03;
-  union SendDelay
-  {
-    struct
-    {
+  union SendDelay {
+    struct {
       uint32_t reserved_0 : 8;
       uint32_t senddelay : 8;
       uint32_t reserved_1 : 16;
@@ -579,10 +575,8 @@ private:
   };
 
   const static uint8_t ADDRESS_IOIN = 0x06;
-  union Input
-  {
-    struct
-    {
+  union Input {
+    struct {
       uint32_t enn : 1;
       uint32_t reserved_0 : 1;
       uint32_t ms1 : 1;
@@ -603,10 +597,8 @@ private:
 
   // Velocity Dependent Driver Feature Control Register Set
   const static uint8_t ADDRESS_IHOLD_IRUN = 0x10;
-  union DriverCurrent
-  {
-    struct
-    {
+  union DriverCurrent {
+    struct {
       uint32_t ihold : 5;
       uint32_t reserved_0 : 3;
       uint32_t irun : 5;
@@ -648,10 +640,8 @@ private:
 
   const static uint8_t ADDRESS_COOLCONF = 0x42;
   const static uint8_t COOLCONF_DEFAULT = 0;
-  union CoolConfig
-  {
-    struct
-    {
+  union CoolConfig {
+    struct {
       uint32_t semin : 4;
       uint32_t reserved_0 : 1;
       uint32_t seup : 2;
@@ -681,10 +671,8 @@ private:
 
   // Driver Register Set
   const static uint8_t ADDRESS_CHOPCONF = 0x6C;
-  union ChopperConfig
-  {
-    struct
-    {
+  union ChopperConfig {
+    struct {
       uint32_t toff : 4;
       uint32_t hstart : 3;
       uint32_t hend : 4;
@@ -876,7 +864,7 @@ private:
     while (serial_ptr_->available() > 0) serial_ptr_->read();
 
     // and wait if necessary
-    if ((long)(millis() - lastCommandMillis) > 1) {
+    if ((long)(millis() - lastCommandMillis) < 2) {
       while ((long)(micros() - nextCommandReadyMicros) < 0) ;
     }
 
@@ -913,7 +901,6 @@ private:
           echo_count++;
           if (echo_count == datagram_size) break;
         }
-        delay(0);
       }
       #if TMC2209_DEBUG == true
         if (echo_count == 0) Serial.println("(none)"); else Serial.println("");
@@ -962,6 +949,7 @@ private:
     if (tx_only_) return 0;
 
     listen();
+
     ReadRequestDatagram read_request_datagram;
     read_request_datagram.bytes = 0;
     read_request_datagram.sync = SYNC;
