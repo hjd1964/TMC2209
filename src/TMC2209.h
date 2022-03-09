@@ -500,11 +500,8 @@ private:
   const static uint8_t BYTE_MAX_VALUE = 0xFF;
   const static uint8_t BITS_PER_BYTE = 8;
 
-  const static uint32_t ECHO_DELAY_INC_MICROSECONDS = 1;
-  const static uint32_t ECHO_DELAY_MAX_MICROSECONDS = 4000;
-  const static uint32_t REPLY_DELAY_INC_MICROSECONDS = 1;
+  const static uint32_t ECHO_DELAY_MAX_MICROSECONDS = 60000;
   const static uint32_t REPLY_DELAY_MAX_MICROSECONDS = 60000;
-  const static uint32_t POST_READ_DELAY_INC_MICROSECONDS = 10;
   const static uint32_t POST_READ_DELAY_NUMERATOR = 500000;
 
   const static uint8_t STEPPER_DRIVER_FEATURE_OFF = 0;
@@ -879,6 +876,8 @@ private:
 
   template<typename Datagram>
   void sendDatagram(Datagram & datagram, uint8_t datagram_size) {
+    yield();
+
     // clear the serial receive buffer if necessary
     while (serial_ptr_->available() > 0) serial_ptr_->read();
 
@@ -947,6 +946,7 @@ private:
   }
 
   void write(uint8_t register_address, uint32_t data) {
+    yield();
     listen();
 
     WriteReadReplyDatagram write_datagram;
@@ -967,6 +967,7 @@ private:
   uint32_t read(uint8_t register_address) {
     if (tx_only_) return 0;
 
+    yield();
     listen();
 
     ReadRequestDatagram read_request_datagram;
