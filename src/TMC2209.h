@@ -500,9 +500,8 @@ private:
   const static uint8_t BYTE_MAX_VALUE = 0xFF;
   const static uint8_t BITS_PER_BYTE = 8;
 
-  const static uint32_t ECHO_DELAY_MAX_MICROSECONDS = 60000;
-  const static uint32_t REPLY_DELAY_MAX_MICROSECONDS = 60000;
-  const static uint32_t POST_READ_DELAY_NUMERATOR = 500000;
+  const static uint32_t ECHO_DELAY_MAX_MICROSECONDS = 25000;
+  const static uint32_t REPLY_DELAY_MAX_MICROSECONDS = 25000;
 
   const static uint8_t STEPPER_DRIVER_FEATURE_OFF = 0;
   const static uint8_t STEPPER_DRIVER_FEATURE_ON = 1;
@@ -510,10 +509,8 @@ private:
   // Datagrams
   const static uint8_t WRITE_READ_REPLY_DATAGRAM_SIZE = 8;
   const static uint8_t DATA_SIZE = 4;
-  union WriteReadReplyDatagram
-  {
-    struct
-    {
+  union WriteReadReplyDatagram {
+    struct {
       uint64_t sync : 4;
       uint64_t reserved : 4;
       uint64_t serial_address : 8;
@@ -531,10 +528,8 @@ private:
   const static uint8_t READ_REPLY_SERIAL_ADDRESS = 0b11111111;
 
   const static uint8_t READ_REQUEST_DATAGRAM_SIZE = 4;
-  union ReadRequestDatagram
-  {
-    struct
-    {
+  union ReadRequestDatagram {
+    struct {
       uint32_t sync : 4;
       uint32_t reserved : 4;
       uint32_t serial_address : 8;
@@ -547,10 +542,8 @@ private:
 
   // General Configuration Registers
   const static uint8_t ADDRESS_GCONF = 0x00;
-  union GlobalConfig
-  {
-    struct
-    {
+  union GlobalConfig {
+    struct {
       uint32_t i_scale_analog : 1;
       uint32_t internal_rsense : 1;
       uint32_t enable_spread_cycle : 1;
@@ -822,7 +815,7 @@ private:
     write(ADDRESS_COOLCONF,COOLCONF_DEFAULT);
   }
 
-  inline void readAndStoreRegisters() {
+  void readAndStoreRegisters() {
     if (!tx_only_) {
       global_config_.bytes = readGlobalConfigBytes();
       chopper_config_.bytes = readChopperConfigBytes();
@@ -830,19 +823,19 @@ private:
     }
   }
 
-  inline uint8_t getVersion() {
+  uint8_t getVersion() {
     Input input;
     input.bytes = read(ADDRESS_IOIN);
     return input.version;
   }
 
-  inline bool serialOperationMode() {
+  bool serialOperationMode() {
     GlobalConfig global_config;
     global_config.bytes = readGlobalConfigBytes();
     return global_config.pdn_disable;
   }
 
-  inline void minimizeMotorCurrent() {
+  void minimizeMotorCurrent() {
     driver_current_.irun = CURRENT_SETTING_MIN;
     driver_current_.ihold = CURRENT_SETTING_MIN;
     writeStoredDriverCurrent();
@@ -961,7 +954,7 @@ private:
     sendDatagram(write_datagram, WRITE_READ_REPLY_DATAGRAM_SIZE);
 
     lastCommandMillis = millis();
-    nextCommandReadyMicros = micros() + ((1000 * 1000 * 9) / serial_baud_rate_);
+    nextCommandReadyMicros = micros() + ((1000 * 1000 * 16) / serial_baud_rate_);
   }
 
   uint32_t read(uint8_t register_address) {
@@ -1020,44 +1013,44 @@ private:
     return reverseData(read_reply_datagram.data);
   }
 
-  inline uint8_t percentToCurrentSetting(uint8_t percent) {
+  uint8_t percentToCurrentSetting(uint8_t percent) {
     uint8_t constrained_percent = constrain(percent, PERCENT_MIN, PERCENT_MAX);
     uint8_t current_setting = map(constrained_percent, PERCENT_MIN, PERCENT_MAX, CURRENT_SETTING_MIN, CURRENT_SETTING_MAX);
     return current_setting;
   }
-  inline uint8_t currentSettingToPercent(uint8_t current_setting) {
+  uint8_t currentSettingToPercent(uint8_t current_setting) {
     uint8_t percent = map(current_setting, CURRENT_SETTING_MIN, CURRENT_SETTING_MAX, PERCENT_MIN, PERCENT_MAX);
     return percent;
   }
-  inline uint8_t percentToHoldDelaySetting(uint8_t percent) {
+  uint8_t percentToHoldDelaySetting(uint8_t percent) {
     uint8_t constrained_percent = constrain(percent, PERCENT_MIN, PERCENT_MAX);
     uint8_t hold_delay_setting = map(constrained_percent, PERCENT_MIN, PERCENT_MAX, HOLD_DELAY_MIN, HOLD_DELAY_MAX);
     return hold_delay_setting;
   }
-  inline uint8_t holdDelaySettingToPercent(uint8_t hold_delay_setting) {
+  uint8_t holdDelaySettingToPercent(uint8_t hold_delay_setting) {
     uint8_t percent = map(hold_delay_setting, HOLD_DELAY_MIN, HOLD_DELAY_MAX, PERCENT_MIN, PERCENT_MAX);
     return percent;
   }
 
-  inline uint8_t pwmAmplitudeToPwmAmpl(uint8_t pwm_amplitude);
-  inline uint8_t pwmAmplitudeToPwmGrad(uint8_t pwm_amplitude);
+  uint8_t pwmAmplitudeToPwmAmpl(uint8_t pwm_amplitude);
+  uint8_t pwmAmplitudeToPwmGrad(uint8_t pwm_amplitude);
 
-  inline void writeStoredGlobalConfig() { write(ADDRESS_GCONF,global_config_.bytes); }
-  inline uint32_t readGlobalConfigBytes() { return read(ADDRESS_GCONF); }
-  inline void writeStoredDriverCurrent() {
+  void writeStoredGlobalConfig() { write(ADDRESS_GCONF,global_config_.bytes); }
+  uint32_t readGlobalConfigBytes() { return read(ADDRESS_GCONF); }
+  void writeStoredDriverCurrent() {
     write(ADDRESS_IHOLD_IRUN, driver_current_.bytes);
     if (driver_current_.irun >= SEIMIN_UPPER_CURRENT_LIMIT) cool_config_.seimin = SEIMIN_UPPER_SETTING; else cool_config_.seimin = SEIMIN_LOWER_SETTING;
     if (cool_step_enabled_) write(ADDRESS_COOLCONF,cool_config_.bytes);
   }
-  inline void writeStoredChopperConfig() { write(ADDRESS_CHOPCONF, chopper_config_.bytes); }
-  inline uint32_t readChopperConfigBytes() { return read(ADDRESS_CHOPCONF); }
-  inline void writeStoredPwmConfig() { write(ADDRESS_PWMCONF, pwm_config_.bytes); }
-  inline uint32_t readPwmConfigBytes() { return read(ADDRESS_PWMCONF); }
+  void writeStoredChopperConfig() { write(ADDRESS_CHOPCONF, chopper_config_.bytes); }
+  uint32_t readChopperConfigBytes() { return read(ADDRESS_CHOPCONF); }
+  void writeStoredPwmConfig() { write(ADDRESS_PWMCONF, pwm_config_.bytes); }
+  uint32_t readPwmConfigBytes() { return read(ADDRESS_PWMCONF); }
 
   #ifdef TMC2209_HARDWARE_SERIAL
-    inline void listen() { }
+    void listen() { }
   #else
-    inline void listen() { if (serial_ptr_ != nullptr) serial_ptr_->listen(); }
+    void listen() { if (serial_ptr_ != nullptr) serial_ptr_->listen(); }
   #endif
 
   HSSerial * serial_ptr_ = nullptr;
