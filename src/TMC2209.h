@@ -52,7 +52,6 @@ public:
     tx_ = tx;
 
     #if defined(TMC2209_HARDWARE_SERIAL) && defined(ESP32)
-    Serial.println("Starting serial port");
       if (rx_ >= 0 && tx_ >= 0) serial_ptr_->begin(serial_baud_rate_, SERIAL_8N1, rx_, tx_); else serial_ptr_->begin(serial_baud_rate_);
     #else
       serial_ptr_->begin(serial_baud_rate_);
