@@ -9,8 +9,8 @@
 #define TMC2209_H
 #include <Arduino.h>
 
-// enable or disable debug messages
 #define TMC2209_DEBUG false
+// enable or disable debug messages (false/0 OFF, true/1 ON, 2 for error messages only)
 
 #if !defined(TMC2209_HARDWARE_SERIAL) && !defined(TMC2209_SOFTWARE_SERIAL)
   #define TMC2209_HARDWARE_SERIAL
@@ -39,9 +39,9 @@ public:
   // identify which microcontroller serial port is connected to the TMC2209
   // specify rx and tx for SoftwareSerial (rx = -1 for write only)
   void setup(long serial_baud_rate, int serial_address = 0, int rx = -1, int tx = -1) {
-    #ifdef TMC2209_HARDWARE_SERIAL
+    #if defined(TMC2209_HARDWARE_SERIAL)
       no_echo = false;
-    #else // TMC2209_SOFTWARE_SERIAL
+    #elif defined(TMC2209_SOFTWARE_SERIAL)
       if (serial_ptr_ == nullptr) serial_ptr_ = new SoftwareSerial(rx, tx);
       no_echo = true;
     #endif
@@ -52,8 +52,22 @@ public:
     tx_ = tx;
 
     #if defined(TMC2209_HARDWARE_SERIAL) && defined(ESP32)
-      if (rx_ >= 0 && tx_ >= 0) serial_ptr_->begin(serial_baud_rate_, SERIAL_8N1, rx_, tx_); else serial_ptr_->begin(serial_baud_rate_);
+      static bool hardwareSerialInitialized = false;
+      if (!hardwareSerialInitialized) {
+        #if TMC2209_DEBUG == 1
+          Serial.println("Initializing hardware serial port");
+        #endif
+        if (rx_ >= 0 && tx_ >= 0) serial_ptr_->begin(serial_baud_rate_, SERIAL_8N1, rx_, tx_); else serial_ptr_->begin(serial_baud_rate_);
+        hardwareSerialInitialized = true;
+      } else {
+        #if TMC2209_DEBUG == 1
+          Serial.println("Hardware serial port already initialized");
+        #endif
+      }
     #else
+      #if TMC2209_DEBUG == 1
+        Serial.println("Initializing software serial port");
+      #endif
       serial_ptr_->begin(serial_baud_rate_);
       #ifdef TMC2209_SOFTWARE_SERIAL
         if (tx_ >= 0) {
@@ -143,7 +157,7 @@ public:
 
   uint16_t getMicrostepsPerStep() {
     int mres[] = {256, 128, 64, 32, 16, 8, 4, 2, 1};
-    chopper_config_.mres = constrain(chopper_config_.mres, 0, 8);
+    chopper_config_.mres = constrain(chopper_config_.mres, (uint32_t)0, (uint32_t)8);
     return mres[chopper_config_.mres];
   }
 
@@ -278,7 +292,28 @@ public:
   Status getStatus() {
     DriveStatus drive_status;
     drive_status.bytes = 0;
-    if (!blocking_) drive_status.bytes = read(ADDRESS_DRV_STATUS);
+    if (!blocking_)
+      drive_status.bytes = read(ADDRESS_DRV_STATUS); 
+    else
+    {
+      drive_status.status.over_temperature_warning = true;
+      drive_status.status.over_temperature_shutdown = true;
+      drive_status.status.short_to_ground_a = true;
+      drive_status.status.short_to_ground_b = true;
+      drive_status.status.low_side_short_a = true;
+      drive_status.status.low_side_short_b = true;
+      drive_status.status.open_load_a = true;
+      drive_status.status.open_load_b = true;
+      drive_status.status.over_temperature_120c = true;
+      drive_status.status.over_temperature_143c = true;
+      drive_status.status.over_temperature_150c = true;
+      drive_status.status.over_temperature_157c = true;
+      drive_status.status.reserved0 = 0;
+      drive_status.status.current_scaling = 0;
+      drive_status.status.reserved1 = 0;
+      drive_status.status.stealth_chop_mode = 0;
+      drive_status.status.standstill = true;
+    }
     return drive_status.status;
   }
 
@@ -499,8 +534,8 @@ private:
   const static uint8_t BYTE_MAX_VALUE = 0xFF;
   const static uint8_t BITS_PER_BYTE = 8;
 
-  const static uint32_t ECHO_DELAY_MAX_MICROSECONDS = 25000;
-  const static uint32_t REPLY_DELAY_MAX_MICROSECONDS = 25000;
+  const static uint32_t ECHO_DELAY_MAX_MICROSECONDS = 35000;
+  const static uint32_t REPLY_DELAY_MAX_MICROSECONDS = 35000;
 
   const static uint8_t STEPPER_DRIVER_FEATURE_OFF = 0;
   const static uint8_t STEPPER_DRIVER_FEATURE_ON = 1;
@@ -870,6 +905,8 @@ private:
   void sendDatagram(Datagram & datagram, uint8_t datagram_size) {
     yield();
 
+    uint8_t byte;
+
     // clear the serial receive buffer if necessary
     while (serial_ptr_->available() > 0) serial_ptr_->read();
 
@@ -878,18 +915,17 @@ private:
       while ((long)(micros() - nextCommandReadyMicros) < 0) ;
     }
 
-    #if TMC2209_DEBUG == true
+    #if TMC2209_DEBUG == 1
       Serial.print("Sending: ");
     #endif
-    for (uint8_t i = 0; i < datagram_size; ++i)
-    {
-      uint8_t byte = (datagram.bytes >> (i * BITS_PER_BYTE)) & BYTE_MAX_VALUE;
+    for (uint8_t i = 0; i < datagram_size; ++i) {
+      byte = (datagram.bytes >> (i * BITS_PER_BYTE)) & BYTE_MAX_VALUE;
       serial_ptr_->write(byte);
-      #if TMC2209_DEBUG == true
+      #if TMC2209_DEBUG == 1
         Serial.print(byte, HEX); Serial.print(", ");
       #endif
     }
-    #if TMC2209_DEBUG == true
+    #if TMC2209_DEBUG == 1
       Serial.println("");
     #endif
 
@@ -898,27 +934,27 @@ private:
       int echo_count = 0;
       uint32_t echo_delay = micros();
 
-      #if TMC2209_DEBUG == true
+      #if TMC2209_DEBUG == 1
         Serial.print("Clear echo bytes: ");
       #endif
 
       while ((long)(micros() - echo_delay) < (long)ECHO_DELAY_MAX_MICROSECONDS) {
         if (serial_ptr_->available()) {
-          int byte = serial_ptr_->read();
-          #if TMC2209_DEBUG == true
+          byte = serial_ptr_->read();
+          #if TMC2209_DEBUG == 1
             Serial.print(byte, HEX); Serial.print(", ");
           #endif
           echo_count++;
           if (echo_count == datagram_size) break;
         }
       }
-      #if TMC2209_DEBUG == true
+      #if TMC2209_DEBUG == 1
         if (echo_count == 0) Serial.println("(none)"); else Serial.println("");
       #endif
 
       // length 0 return is assumed to be due to HardwareSerial not being full duplex?
       if (echo_count == 0 && datagram_size == WRITE_READ_REPLY_DATAGRAM_SIZE) {
-        #if TMC2209_DEBUG == true
+        #if TMC2209_DEBUG >= 1
           Serial.println("Write without echo detected, switching to no echo mode");
         #endif
         no_echo = true;
@@ -927,7 +963,7 @@ private:
 
       // wrong length return is an error
       if (echo_count < datagram_size) {
-        #if TMC2209_DEBUG == true
+        #if TMC2209_DEBUG >= 1
           Serial.print("Error, didn't get echo: "); Serial.print(echo_count); Serial.print(" < "); Serial.println(datagram_size);
         #endif
         blocking_ = true;
@@ -977,7 +1013,7 @@ private:
     }
 
     if (serial_ptr_->available() < WRITE_READ_REPLY_DATAGRAM_SIZE) {
-      #if TMC2209_DEBUG == true
+      #if TMC2209_DEBUG >= 1
         Serial.print("Return timed out, read ");
         Serial.print(serial_ptr_->available());
         Serial.print(" bytes: ");
@@ -987,7 +1023,7 @@ private:
       blocking_ = true;
       return 0;
     }
-    #if TMC2209_DEBUG == true
+    #if TMC2209_DEBUG == 1
       Serial.println("Returned: ");
     #endif
 
@@ -998,11 +1034,11 @@ private:
     for (uint8_t i = 0; i<WRITE_READ_REPLY_DATAGRAM_SIZE; ++i) {
       byte = serial_ptr_->read();
       read_reply_datagram.bytes |= (byte << (byte_count++ * BITS_PER_BYTE));
-      #if TMC2209_DEBUG == true
+      #if TMC2209_DEBUG == 1
         Serial.print(byte, HEX); Serial.print(", ");
       #endif
     }
-    #if TMC2209_DEBUG == true
+    #if TMC2209_DEBUG == 1
       Serial.println("");
     #endif
 
