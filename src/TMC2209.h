@@ -962,6 +962,7 @@ private:
           Serial.println("Write without echo detected, switching to no echo mode");
         #endif
         no_echo = true;
+        tx_only_ = true;
         return;
       } else
 
