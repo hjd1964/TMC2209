@@ -9,8 +9,10 @@
 #define TMC2209_H
 #include <Arduino.h>
 
-#define TMC2209_DEBUG false
 // enable or disable debug messages (false/0 OFF, true/1 ON, 2 for error messages only)
+#ifndef TMC2209_DEBUG
+  #define TMC2209_DEBUG false
+#endif
 
 #if !defined(TMC2209_HARDWARE_SERIAL) && !defined(TMC2209_SOFTWARE_SERIAL)
   #define TMC2209_HARDWARE_SERIAL
