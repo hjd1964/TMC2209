@@ -59,7 +59,9 @@ public:
         #if TMC2209_DEBUG == 1
           Serial.println("Initializing hardware serial port");
         #endif
-        if (rx_ >= 0 && tx_ >= 0) serial_ptr_->begin(serial_baud_rate_, SERIAL_8N1, rx_, tx_); else serial_ptr_->begin(serial_baud_rate_);
+        if (rx_ >= 0 && tx_ >= 0) serial_ptr_->begin(serial_baud_rate_, SERIAL_8N1, rx_, tx_);
+        else if (rx_ < 0 && tx_ >= 0) serial_ptr_->begin(serial_baud_rate_, SERIAL_8N1, 255, tx_);
+        else serial_ptr_->begin(serial_baud_rate_);
         hardwareSerialInitialized = true;
       } else {
         #if TMC2209_DEBUG == 1
@@ -972,7 +974,10 @@ private:
         return;
       }
 
-    }
+    } 
+    #if defined(TMC2209_HARDWARE_SERIAL)
+      else serial_ptr_->flush();
+    #endif
   }
 
   void write(uint8_t register_address, uint32_t data) {
