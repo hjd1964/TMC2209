@@ -40,7 +40,7 @@ public:
 
   // identify which microcontroller serial port is connected to the TMC2209
   // specify rx and tx for SoftwareSerial (rx = -1 for write only)
-  void setup(long serial_baud_rate, int serial_address = 0, int rx = -1, int tx = -1) {
+  void setup(long serial_baud_rate, int serial_address = 0, int rx = -1, int tx = -1, bool invert = false) {
     #if defined(TMC2209_HARDWARE_SERIAL)
       no_echo = false;
     #elif defined(TMC2209_SOFTWARE_SERIAL)
@@ -59,8 +59,8 @@ public:
         #if TMC2209_DEBUG == 1
           Serial.println("Initializing hardware serial port");
         #endif
-        if (rx_ >= 0 && tx_ >= 0) serial_ptr_->begin(serial_baud_rate_, SERIAL_8N1, rx_, tx_);
-        else if (rx_ < 0 && tx_ >= 0) serial_ptr_->begin(serial_baud_rate_, SERIAL_8N1, 255, tx_);
+        if (rx_ >= 0 && tx_ >= 0) serial_ptr_->begin(serial_baud_rate_, SERIAL_8N1, rx_, tx_, invert);
+        else if (rx_ < 0 && tx_ >= 0) serial_ptr_->begin(serial_baud_rate_, SERIAL_8N1, -1, tx_, invert);
         else serial_ptr_->begin(serial_baud_rate_);
         hardwareSerialInitialized = true;
       } else {
@@ -92,9 +92,9 @@ public:
   }
 
   // identify which microcontroller serial port is connected to the TMC2209
-  void setup(HSSerial & serial, long serial_baud_rate = 500000, int serial_address = 0, int rx = -1, int tx = -1) {
+  void setup(HSSerial & serial, long serial_baud_rate = 500000, int serial_address = 0, int rx = -1, int tx = -1, bool invert = false) {
     serial_ptr_ = &serial;
-    setup(serial_baud_rate, serial_address, rx, tx);
+    setup(serial_baud_rate, serial_address, rx, tx, invert);
   }
 
   // if driver is not communicating, check power and communication connections
