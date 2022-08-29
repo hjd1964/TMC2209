@@ -9,7 +9,7 @@ const uint8_t RUN_CURRENT_PERCENT = 100;
 const uint8_t HOLD_CURRENT_STANDSTILL = 0;
 
 // Instantiate TMC2209
-TMC2209 stepper_driver;
+TMC2209Stepper stepper_driver;
 
 
 void setup()

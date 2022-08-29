@@ -16,7 +16,7 @@ uint8_t microsteps_per_step_exponent = MICROSTEPS_PER_STEP_EXPONENT_MIN;
 
 
 // Instantiate TMC2209
-TMC2209 stepper_driver;
+TMC2209Stepper stepper_driver;
 
 
 void setup()

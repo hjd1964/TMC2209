@@ -10,7 +10,7 @@ const uint8_t RUN_CURRENT_PERCENT = 40;
 
 
 // Instantiate TMC2209
-TMC2209 stepper_driver;
+TMC2209Stepper stepper_driver;
 
 
 void setup()
@@ -46,8 +46,8 @@ void loop()
   }
 
   bool disabled_by_input_pin = stepper_driver.disabledByInputPin();
-  TMC2209::Settings settings = stepper_driver.getSettings();
-  TMC2209::Status status = stepper_driver.getStatus();
+  TMC2209Stepper::Settings settings = stepper_driver.getSettings();
+  TMC2209Stepper::Status status = stepper_driver.getStatus();
 
   if (disabled_by_input_pin)
   {

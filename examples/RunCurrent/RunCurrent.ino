@@ -15,7 +15,7 @@ uint8_t run_current_percent = PERCENT_INC;
 
 
 // Instantiate TMC2209
-TMC2209 stepper_driver;
+TMC2209Stepper stepper_driver;
 
 
 void setup()
@@ -53,7 +53,7 @@ void loop()
   stepper_driver.setRunCurrent(run_current_percent);
   delay(DELAY);
 
-  TMC2209::Status status = stepper_driver.getStatus();
+  TMC2209Stepper::Status status = stepper_driver.getStatus();
   Serial.print("status.current_scaling = ");
   Serial.println(status.current_scaling);
   Serial.println("");

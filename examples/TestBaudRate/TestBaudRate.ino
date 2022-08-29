@@ -22,7 +22,7 @@ const uint8_t SUCCESSIVE_OPERATION_COUNT = 3;
 const int DELAY = 2000;
 
 // Instantiate TMC2209
-TMC2209 stepper_driver;
+TMC2209Stepper stepper_driver;
 uint8_t serial1_baud_rate_index = 0;
 
 

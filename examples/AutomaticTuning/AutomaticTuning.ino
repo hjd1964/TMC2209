@@ -14,7 +14,7 @@ const uint8_t HOLD_CURRENT_PERCENT_REDUCED = 10;
 
 
 // Instantiate TMC2209
-TMC2209 stepper_driver;
+TMC2209Stepper stepper_driver;
 
 
 void setup()

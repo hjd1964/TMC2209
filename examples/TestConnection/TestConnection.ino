@@ -6,7 +6,7 @@
 #include <TMC2209.h>
 
 // Instantiate TMC2209
-TMC2209 stepper_driver;
+TMC2209Stepper stepper_driver;
 
 const long SERIAL_BAUD_RATE = 115200;
 const int DELAY = 2000;
@@ -26,7 +26,7 @@ void loop()
 {
   Serial.println("*************************");
 
-  TMC2209::Settings settings = stepper_driver.getSettings();
+  TMC2209Stepper::Settings settings = stepper_driver.getSettings();
   Serial.print("settings.is_communicating = ");
   Serial.println(settings.is_communicating);
 
@@ -45,16 +45,16 @@ void loop()
     Serial.print("settings.standstill_mode = ");
     switch (settings.standstill_mode)
     {
-      case TMC2209::NORMAL:
+      case TMC2209Stepper::NORMAL:
         Serial.println("normal");
         break;
-      case TMC2209::FREEWHEELING:
+      case TMC2209Stepper::FREEWHEELING:
         Serial.println("freewheeling");
         break;
-      case TMC2209::STRONG_BRAKING:
+      case TMC2209Stepper::STRONG_BRAKING:
         Serial.println("strong_braking");
         break;
-      case TMC2209::BRAKING:
+      case TMC2209Stepper::BRAKING:
         Serial.println("braking");
         break;
     }
@@ -91,7 +91,7 @@ void loop()
     Serial.println(disabled_by_input_pin);
     Serial.println("");
   
-    TMC2209::Status status = stepper_driver.getStatus();
+    TMC2209Stepper::Status status = stepper_driver.getStatus();
     Serial.print("status.over_temperature_warning = ");
     Serial.println(status.over_temperature_warning);
     Serial.print("status.over_temperature_shutdown = ");

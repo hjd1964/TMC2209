@@ -15,7 +15,7 @@ const uint8_t RUN_CURRENT_PERCENT = 50;
 uint8_t hold_current_percent = PERCENT_INC;
 
 // Instantiate TMC2209
-TMC2209 stepper_driver;
+TMC2209Stepper stepper_driver;
 
 
 void setup()

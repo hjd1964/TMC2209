@@ -11,7 +11,7 @@ const uint8_t STALL_GUARD_THRESHOLD = 50;
 
 
 // Instantiate TMC2209
-TMC2209 stepper_driver;
+TMC2209Stepper stepper_driver;
 
 
 void setup()

@@ -10,12 +10,12 @@ const int LOOP_COUNT = 100;
 
 unsigned long time_begin;
 unsigned long time_end;
-TMC2209::Status status;
+TMC2209Stepper::Status status;
 
 typedef void (*DriverFunction)(void);
 
 // Instantiate TMC2209
-TMC2209 stepper_driver;
+TMC2209Stepper stepper_driver;
 
 void driverWriteFunction()
 {

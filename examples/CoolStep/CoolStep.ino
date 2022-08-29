@@ -8,8 +8,8 @@ const int DELAY = 500;
 const int32_t VELOCITY = 20000;
 const uint8_t RUN_CURRENT_PERCENT = 60;
 const uint8_t LOOPS_BEFORE_TOGGLING = 3;
-const TMC2209::CurrentIncrement CURRENT_INCREMENT = TMC2209::CURRENT_INCREMENT_8;
-const TMC2209::MeasurementCount MEASUREMENT_COUNT = TMC2209::MEASUREMENT_COUNT_1;
+const TMC2209Stepper::CurrentIncrement CURRENT_INCREMENT = TMC2209Stepper::CURRENT_INCREMENT_8;
+const TMC2209Stepper::MeasurementCount MEASUREMENT_COUNT = TMC2209Stepper::MEASUREMENT_COUNT_1;
 const uint32_t COOL_STEP_DURATION_THRESHOLD = 2000;
 const uint8_t COOL_STEP_LOWER_THRESHOLD = 1;
 const uint8_t COOL_STEP_UPPER_THRESHOLD = 0;
@@ -19,7 +19,7 @@ bool cool_step_enabled = false;
 
 
 // Instantiate TMC2209
-TMC2209 stepper_driver;
+TMC2209Stepper stepper_driver;
 
 
 void setup()
@@ -94,11 +94,11 @@ void loop()
   Serial.println(pwm_gradient_auto);
   delay(DELAY);
 
-  TMC2209::Status status = stepper_driver.getStatus();
+  TMC2209Stepper::Status status = stepper_driver.getStatus();
   Serial.print("status.current_scaling = ");
   Serial.println(status.current_scaling);
 
-  TMC2209::Settings settings = stepper_driver.getSettings();
+  TMC2209Stepper::Settings settings = stepper_driver.getSettings();
   Serial.print("settings.irun_register_value = ");
   Serial.println(settings.irun_register_value);
 

@@ -8,7 +8,7 @@ const long SERIAL_BAUD_RATE = 115200;
 const int DELAY = 3000;
 
 // Instantiate TMC2209
-TMC2209 stepper_driver;
+TMC2209Stepper stepper_driver;
 
 
 void setup()

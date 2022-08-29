@@ -17,7 +17,7 @@ const uint8_t PWM_GRADIENT = 20;
 
 
 // Instantiate TMC2209
-TMC2209 stepper_driver;
+TMC2209Stepper stepper_driver;
 bool invert_direction = false;
 
 void setup()
@@ -68,8 +68,8 @@ void loop()
   stepper_driver.moveAtVelocity(RUN_VELOCITY);
 
   bool disabled_by_input_pin = stepper_driver.disabledByInputPin();
-  TMC2209::Settings settings = stepper_driver.getSettings();
-  TMC2209::Status status = stepper_driver.getStatus();
+  TMC2209Stepper::Settings settings = stepper_driver.getSettings();
+  TMC2209Stepper::Status status = stepper_driver.getStatus();
 
   if (disabled_by_input_pin)
   {
@@ -103,7 +103,7 @@ void loop()
     Serial.print("pwm_gradient_auto ");
     Serial.println(pwm_gradient_auto);
 
-    TMC2209::Settings settings = stepper_driver.getSettings();
+    TMC2209Stepper::Settings settings = stepper_driver.getSettings();
     Serial.print("settings.irun_percent = ");
     Serial.println(settings.irun_percent);
     Serial.print("settings.automatic_current_scaling_enabled = ");

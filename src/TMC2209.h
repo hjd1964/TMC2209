@@ -1,8 +1,9 @@
 // ----------------------------------------------------------------------------
-// TMC2209.h
+// TMC2209Stepper.h
 //
 // Authors:
 // Peter Polidoro peter@polidoro.io
+// Howard Dutton hjd1964@gmail.com
 // ----------------------------------------------------------------------------
 
 #ifndef TMC2209_H
@@ -26,9 +27,9 @@
   #define HSSerial SoftwareSerial
 #endif
 
-class TMC2209 {
+class TMC2209Stepper {
 public:
-  TMC2209() {
+  TMC2209Stepper() {
     blocking_ = true;
     serial_ptr_ = nullptr;
     serial_baud_rate_ = 500000;
@@ -335,7 +336,7 @@ public:
   }
 
   enum StandstillMode { NORMAL = 0, FREEWHEELING = 1, STRONG_BRAKING = 2, BRAKING = 3};
-  void setStandstillMode(TMC2209::StandstillMode mode) {
+  void setStandstillMode(TMC2209Stepper::StandstillMode mode) {
     if (blocking_) return;
     pwm_config_.freewheel = mode;
     writeStoredPwmConfig();
