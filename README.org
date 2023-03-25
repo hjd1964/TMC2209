@@ -1,10 +1,10 @@
-#+TITLE: TMC2209X
+#+TITLE: TMC2209Stepper
 #+AUTHOR: Peter Polidoro, Howard Dutton
 #+EMAIL: peter@polidoro.io, hjd1964@gmail.com
 
 * Library Information
-- Name :: TMC2209X
-- Version :: 8.0.3
+- Name :: TMC2209Stepper
+- Version :: 1.0.0
 - License :: BSD
 - URL :: https://github.com/hjd1964/TMC2209X
 - Author :: Peter Polidoro, Howard Dutton
@@ -35,7 +35,7 @@ For example:
 #+BEGIN_SRC cpp
 
 #include <Arduino.h>
-#include <TMC2209X.h>
+#include <TMC2209.h>
 
 // Instantiate TMC2209
 TMC2209Stepper stepper_driver;
@@ -104,7 +104,7 @@ is a good setting to use.
 #+BEGIN_SRC cpp
 
 #include <Arduino.h>
-#include <TMC2209X.h>
+#include <TMC2209.h>
 
 // Instantiate TMC2209
 TMC2209Stepper stepper_driver;
@@ -133,7 +133,7 @@ For example:
 #+BEGIN_SRC cpp
 
 #include <Arduino.h>
-#include <TMC2209X.h>
+#include <TMC2209.h>
 
 // Instantiate the two TMC2209
 TMC2209Stepper stepper_driver_0;

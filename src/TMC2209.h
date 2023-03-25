@@ -1,5 +1,5 @@
 // ----------------------------------------------------------------------------
-// TMC2209Stepper.h
+// TMC2209.h
 //
 // Authors:
 // Peter Polidoro peter@polidoro.io
