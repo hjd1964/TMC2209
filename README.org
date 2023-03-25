@@ -6,7 +6,7 @@
 - Name :: TMC2209Stepper
 - Version :: 1.0.0
 - License :: BSD
-- URL :: https://github.com/hjd1964/TMC2209X
+- URL :: https://github.com/hjd1964/TMC2209
 - Author :: Peter Polidoro, Howard Dutton
 - Email :: peter@polidoro.io, hjd1964@gmail.com
 
