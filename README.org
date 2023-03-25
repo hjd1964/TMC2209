@@ -104,10 +104,10 @@ is a good setting to use.
 #+BEGIN_SRC cpp
 
 #include <Arduino.h>
-#include <TMC2209.h>
+#include <TMC2209X.h>
 
 // Instantiate TMC2209
-TMC2209 stepper_driver;
+TMC2209Stepper stepper_driver;
 HardwareSerial & serial_stream = Serial1;
 const long SERIAL1_BAUD_RATE = 500000;
 
