@@ -6,9 +6,9 @@
 - Name :: TMC2209X
 - Version :: 8.0.3
 - License :: BSD
-- URL :: https://github.com/janelia-arduino/TMC2209
-- Author :: Peter Polidoro
-- Email :: peter@polidoro.io
+- URL :: https://github.com/hjd1964/TMC2209X
+- Author :: Peter Polidoro, Howard Dutton
+- Email :: peter@polidoro.io, hjd1964@gmail.com
 
 ** Description
 
