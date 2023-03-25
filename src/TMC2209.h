@@ -50,6 +50,7 @@ public:
     #endif
     blocking_ = false;
     tx_only_ = (rx == -1);
+    if (tx == -1) tx_only_ = false;
     serial_baud_rate_ = serial_baud_rate;
     rx_ = rx;
     tx_ = tx;
