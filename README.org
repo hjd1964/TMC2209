@@ -1,6 +1,6 @@
-#+TITLE: TMC2209
-#+AUTHOR: Peter Polidoro
-#+EMAIL: peter@polidoro.io
+#+TITLE: TMC2209X
+#+AUTHOR: Peter Polidoro, Howard Dutton
+#+EMAIL: peter@polidoro.io, hjd1964@gmail.com
 
 * Library Information
 - Name :: TMC2209
