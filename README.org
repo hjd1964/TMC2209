@@ -3,7 +3,7 @@
 #+EMAIL: peter@polidoro.io, hjd1964@gmail.com
 
 * Library Information
-- Name :: TMC2209
+- Name :: TMC2209X
 - Version :: 8.0.3
 - License :: BSD
 - URL :: https://github.com/janelia-arduino/TMC2209
