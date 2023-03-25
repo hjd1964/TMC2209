@@ -133,11 +133,11 @@ For example:
 #+BEGIN_SRC cpp
 
 #include <Arduino.h>
-#include <TMC2209.h>
+#include <TMC2209X.h>
 
 // Instantiate the two TMC2209
-TMC2209 stepper_driver_0;
-TMC2209 stepper_driver_1;
+TMC2209Stepper stepper_driver_0;
+TMC2209Stepper stepper_driver_1;
 const long SERIALX_BAUD_RATE = 115200;
 
 void setup()
